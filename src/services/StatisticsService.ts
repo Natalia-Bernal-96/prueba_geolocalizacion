@@ -1,55 +1,26 @@
-import { IpData } from '../models/IpData';
-import { IpRepository } from '../repositories/IpRepository';
-import { calculateDistance } from '../utils/DistanceCalculator';
-import { AppDataSource } from '../config/database';
-import { StatisticsIp } from '../entities/StatisticsIp';
+import { StatisticsData } from '../models/StatisticsData';
+import { StatisticsRepository } from '../repositories/StatisticsRepository';
 
 export class StatisticsService {
-    private ipRepository: IpRepository;
-    private statisticsRepository;
+    private statisticsRepository: StatisticsRepository;
 
     constructor() {
-        this.ipRepository = new IpRepository();
-        this.statisticsRepository = AppDataSource.getRepository(StatisticsIp);
+        this.statisticsRepository = new StatisticsRepository();
     }
 
-    async getStatisticsInformation(ip: string): Promise<IpData> {
-        const currentDate = new Date();
-        const ipData = await this.ipRepository.getIpData(ip);
-        const countryInfo = await this.ipRepository.getCountryInfo(ipData.country_code);
-        const exchangeRateData = await this.ipRepository.getCurrencyExchangeRate(countryInfo.currencies);
-        const distanceFromBuenosAires = calculateDistance(
-                { lat: -34.6037, lon: -58.3816 }, // Buenos Aires
-                { lat: countryInfo.latlng[0], lon: countryInfo.latlng[1] }
-            );
-        
-        await this.saveStatistics(ipData.country_name, distanceFromBuenosAires);
-        
-        return new IpData(
-            ip,
-            currentDate,
-            ipData.country_name,
-            ipData.country_code,
-            countryInfo.languages,
-            countryInfo.timezones,
-            distanceFromBuenosAires,
-            countryInfo.currencies,
-            exchangeRateData.rates
-        );
-    }
+    async getStatisticsInformation(operation: string): Promise<StatisticsData> {
 
-    private async saveStatistics(countryName: string, distance: number): Promise<void> {
-        const existingStatistics = await this.statisticsRepository.findOne({ where: { country_name: countryName } });
+        switch (operation) {
+            case 'furthest':
+                return await this.statisticsRepository.getFurthestIp();
 
-        if (existingStatistics) {
-            existingStatistics.invocations += 1;
-            await this.statisticsRepository.save(existingStatistics);
-        } else {
-            const newStatistics = new StatisticsIp();
-            newStatistics.country_name = countryName;
-            newStatistics.distance = distance;
-            newStatistics.invocations = 1;
-            await this.statisticsRepository.save(newStatistics);
+            case 'closest':
+                return await this.statisticsRepository.getClosestIp();
+            case 'average':
+                return await this.statisticsRepository.getAverageDistance();
+            default:
+                throw new Error('Invalid operation');
         }
     }
+
 }
