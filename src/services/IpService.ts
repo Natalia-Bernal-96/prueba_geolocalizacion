@@ -27,8 +27,17 @@ export class IpService {
         }
 
         const ipData = await this.ipRepository.getIpData(ip);
+        if (!ipData) {
+            throw new Error('No se recibieron datos válidos de la API de IP');
+        }
         const countryInfo = await this.ipRepository.getCountryInfo(ipData.country_code);
+        if (!countryInfo) {
+            throw new Error('No se recibieron datos válidos de la API de país');
+        }
         const exchangeRateData = await this.ipRepository.getCurrencyExchangeRate(countryInfo.currencies);
+        if (!exchangeRateData) {
+            throw new Error('No se recibieron datos válidos de la API de moneda');
+        }
         const distanceFromBuenosAires = calculateDistance(
                 { lat: -34.6037, lon: -58.3816 }, // Buenos Aires
                 { lat: countryInfo.latlng[0], lon: countryInfo.latlng[1] }

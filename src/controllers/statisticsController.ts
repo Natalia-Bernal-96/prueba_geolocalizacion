@@ -8,9 +8,8 @@ export class StatisticsController {
         this.statisticsService = new StatisticsService();
     }
 
-    async getStatisticsData(req: Request, res: Response): Promise<void> {
+    async getStatisticsData(req: Request, res: Response): Promise<any> {
         const operation = req.query.operation as string;
-
         try {
             const statisticsData = await this.statisticsService.getStatisticsInformation(operation);
             res.json(statisticsData);

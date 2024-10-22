@@ -1,6 +1,12 @@
 import { AppDataSource } from '../config/database';
 import { StatisticsIp } from '../entities/StatisticsIp';
 
+interface StatisticsData {
+    country_name: string;
+    distance: number;
+    invocations: number;
+}
+
 export class StatisticsRepository {
     private statisticsRepository;
 
@@ -8,18 +14,32 @@ export class StatisticsRepository {
         this.statisticsRepository = AppDataSource.getRepository(StatisticsIp);
     }
 
-    async getFurthestIp(): Promise<any> {
+    async getFurthestIp(): Promise<StatisticsData> {
         try {
-            return await this.statisticsRepository.findOne({
-                order: {
-                  distance: 'DESC', 
-                },
-              });
+            const [furthestIp] = await this.statisticsRepository.find({
+                order: { distance: 'DESC' },
+                take: 1 // Limita a un solo resultado
+            });
+        
+            if (!furthestIp) {
+                return {
+                    country_name: '',
+                    distance: 0,
+                    invocations: 0
+                };
+            }
+    
+            return {
+                country_name: furthestIp.country_name,
+                distance: furthestIp.distance,
+                invocations: furthestIp.invocations
+            };
         } catch (error) {
             console.error('API Request Error:', error);
             throw new Error('Error en la petición getFurthestIp');
         }
     }
+    
 
     async getClosestIp(): Promise<any> {
         try {
