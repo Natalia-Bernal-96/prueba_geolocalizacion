@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Definición de URLs y configuraciones de la API
 const IP_API_URL = 'https://api.ipapi.com/api/';
-const IP_API_ACCESS_KEY = 'befe669a48f251a11bf8e6f6125ccba6';
+const IP_API_ACCESS_KEY = '410c44129cf1910b70108c11702e12f4';
 
 const REST_COUNTRIES_URL = 'https://restcountries.com/v3.1/alpha';
 

@@ -27,11 +27,12 @@ export class IpService {
         }
 
         const ipData = await this.ipRepository.getIpData(ip);
-        if (!ipData) {
-            throw new Error('No se recibieron datos válidos de la API de IP');
+        
+        if (!ipData || !ipData.country_code) {
+            throw new Error('No se recibieron datos válidos de la API de IP' );
         }
         const countryInfo = await this.ipRepository.getCountryInfo(ipData.country_code);
-        if (!countryInfo) {
+        if (!countryInfo || !countryInfo.currencies) {
             throw new Error('No se recibieron datos válidos de la API de país');
         }
         const exchangeRateData = await this.ipRepository.getCurrencyExchangeRate(countryInfo.currencies);

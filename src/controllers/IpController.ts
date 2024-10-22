@@ -15,7 +15,7 @@ export class IpController {
             res.json(ipData);
         } catch (error) {
             console.log(error);
-            res.status(500).json({ message: 'Error fetching IP data' });
+            res.status(500).json({ message: 'Error fetching IP data' + error });
         }
     }
     
