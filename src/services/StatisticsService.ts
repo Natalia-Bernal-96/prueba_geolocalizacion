@@ -13,11 +13,10 @@ export class StatisticsService {
         switch (operation) {
             case 'furthest':
                 return await this.statisticsRepository.getFurthestIp();
-                
             case 'closest':
-               // return await this.statisticsRepository.getClosestIp();
+                return await this.statisticsRepository.getClosestIp();
             case 'average':
-                //return await this.statisticsRepository.getAverageDistance();
+                return await this.statisticsRepository.getAverageDistance();
             default:
                 throw new Error('Invalid operation');
         }
